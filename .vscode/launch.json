@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+      {
+          "name": "debug swc",
+          "type": "lldb",
+          "request": "launch",
+          "program": "${workspaceRoot}/target/debug/debug-swc",
+          "args": [],
+          "cwd": "${workspaceRoot}",
+      }
+  ]
+}
