@@ -1,18 +1,19 @@
 extern crate swc_common;
 extern crate swc_ecma_parser;
 
-use std::{path::Path, sync::Arc};
+use std::path::Path;
 use swc_atoms::JsWord;
 use swc_common::{
     errors::{ColorConfig, Handler},
+    sync::Lrc,
     SourceMap,
 };
 use swc_ecma_ast::{Decl, Module, ModuleItem, Pat, Stmt};
-use swc_ecma_parser::{lexer::Lexer, Parser, SourceFileInput, Syntax};
+use swc_ecma_parser::{lexer::Lexer, Parser, StringInput, Syntax};
 
 fn main() {
     swc_common::GLOBALS.set(&swc_common::Globals::new(), || {
-        let cm: Arc<SourceMap> = Default::default();
+        let cm: Lrc<SourceMap> = Default::default();
         let handler = Handler::with_tty_emitter(ColorConfig::Auto, true, false, Some(cm.clone()));
 
         let fm = cm
@@ -24,7 +25,7 @@ fn main() {
             Syntax::Es(Default::default()),
             // JscTarget defaults to es5
             Default::default(),
-            SourceFileInput::from(&*fm),
+            StringInput::from(&*fm),
             None,
         );
 
@@ -53,7 +54,7 @@ fn get_identifier_name(module: &Module) -> Result<&JsWord, ()> {
         if let ModuleItem::Stmt(Stmt::Decl(Decl::Var(var))) = module_item {
             for decl in &var.decls {
                 if let Pat::Ident(identifier) = &decl.name {
-                    return Ok(&identifier.sym);
+                    return Ok(&identifier.id.sym);
                 }
             }
         }
